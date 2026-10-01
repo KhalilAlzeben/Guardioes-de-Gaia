@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Estágios de Maturidade da Mata Atlântica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E3E9E0; --bg2:#D3DECF; --panel:#F1F4EE; --ink:#1C3227; --muted:#526759; --line:#A9B9AC;
+  --pink:#B8507F; --ochre:#A9821A; --green:#4F8445;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Source Serif 4", Georgia, "Times New Roman", serif;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111B16; --bg2:#1A2A21; --panel:#18261F; --ink:#DCE7DE; --muted:#9DB0A3; --line:#3A5244;
+    --pink:#E07AAE; --ochre:#D2A93A; --green:#7DB36F; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111B16; --bg2:#1A2A21; --panel:#18261F; --ink:#DCE7DE; --muted:#9DB0A3; --line:#3A5244;
+  --pink:#E07AAE; --ochre:#D2A93A; --green:#7DB36F; color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.62}
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px}
+header.wrap{padding-top:40px;padding-bottom:8px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(2.1rem,6.2vw,3.9rem);line-height:1.02;letter-spacing:-.025em;margin:0 0 18px;max-width:16ch}
+.intro{max-width:60ch;color:var(--muted);margin:0}
+
+.timeline{margin-top:32px;display:grid;grid-template-columns:repeat(3,1fr);border-top:2px solid var(--ink)}
+.stage-btn{all:unset;cursor:pointer;padding:12px 12px 14px 0;position:relative;display:flex;flex-direction:column;gap:2px}
+.stage-btn + .stage-btn{padding-left:14px;border-left:1px solid var(--line)}
+.stage-btn::before{content:"";position:absolute;top:-2px;left:0;right:0;height:5px;background:transparent;transition:background .25s}
+.stage-btn[aria-pressed="true"]::before{background:var(--accent)}
+.stage-btn .n{font-family:var(--display);font-weight:500;font-size:.85rem;color:var(--muted)}
+.stage-btn .nm{font-family:var(--display);font-weight:700;font-size:clamp(1.05rem,2.6vw,1.45rem);line-height:1.1}
+.stage-btn .yr{font-size:.85rem;color:var(--muted)}
+.stage-btn[aria-pressed="false"] .nm{opacity:.55}
+.stage-btn:focus-visible{outline:3px solid var(--pink);outline-offset:4px;border-radius:2px}
+.slider-row{display:flex;align-items:center;gap:16px;margin:18px 0 6px;flex-wrap:wrap}
+.slider-row label{font-family:var(--display);font-size:.95rem;color:var(--muted)}
+.slider-row output{font-family:var(--display);font-weight:700;font-size:1.05rem}
+input[type=range]{width:100%;accent-color:var(--pink);height:28px;margin:0}
+.track{position:relative}
+.scale{display:flex;gap:3px;margin:2px 9px 0;font-family:var(--display);font-size:.72rem;color:var(--muted)}
+.scale span{border-top:4px solid var(--c);padding-top:3px;opacity:.85;overflow:hidden;white-space:nowrap;text-overflow:clip}
+.play{margin-left:auto;font-family:var(--display);font-weight:500;font-size:.9rem;background:var(--ink);color:var(--bg);border:0;border-radius:999px;padding:8px 16px;cursor:pointer}
+.play[aria-pressed="true"]{background:var(--pink)}
+.play:focus-visible{outline:3px solid var(--pink);outline-offset:3px}
+.layernav{display:flex;gap:8px;margin-top:4px;padding-top:12px;border-top:1px solid var(--line)}
+.layernav button{flex:1;font-family:var(--display);font-size:.88rem;background:transparent;color:var(--ink);border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer}
+.layernav button:disabled{opacity:.4;cursor:default}
+.layernav button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.compare{font-size:.88rem;color:var(--muted);margin:0 0 12px}
+
+.lab{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:28px;align-items:start;margin-top:10px}
+.stagebox{position:relative;border-radius:14px;overflow:hidden;
+  background:radial-gradient(120% 90% at 40% 30%, var(--panel) 0%, var(--bg2) 100%);touch-action:pan-y;cursor:grab}
+.stagebox:active{cursor:grabbing}
+#scene{display:block;width:100%;height:100%}
+.tag{position:absolute;left:0;top:0;opacity:0;display:flex;align-items:center;gap:8px;pointer-events:auto;cursor:pointer;
+  font-family:var(--display);white-space:nowrap;transition:opacity .35s;will-change:transform}
+.tag::before{content:"";width:18px;height:1px;background:var(--muted)}
+.tag b{font-weight:700;font-size:.92rem}
+.tag small{font-size:.75rem;color:var(--muted)}
+.tag.sel b{color:var(--pink)}
+.fallback{padding:40px 24px;color:var(--muted)}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.chip,.toggle{font-family:var(--display);font-size:.88rem;background:transparent;color:var(--ink);border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--pink);color:var(--pink);font-weight:700}
+.toggle{border-color:var(--ink);font-weight:500;margin-right:6px}
+.toggle:hover{background:var(--ink);color:var(--bg)}
+.chip:focus-visible,.toggle:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.hint{font-size:.85rem;color:var(--muted);margin:10px 0 0}
+
+.panel{background:var(--panel);border-left:5px solid var(--accent);padding:22px 22px 18px;border-radius:0 10px 10px 0}
+.panel .stage{font-family:var(--display);font-size:.95rem;color:var(--muted);margin:0 0 4px}
+.panel h2{font-family:var(--display);font-size:1.75rem;line-height:1.1;margin:0 0 10px;letter-spacing:-.01em}
+.panel p{margin:0 0 12px}
+.panel ul{margin:0 0 14px;padding-left:1.1em}
+.panel li i{color:var(--muted)}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:16px 0 14px;padding-top:14px;border-top:1px solid var(--line);font-size:.93rem}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0}
+.meter{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:6px}
+.meter span{display:block;height:100%;background:linear-gradient(90deg,var(--ochre),#F2C94C);transition:width .4s}
+.fauna{font-size:.95rem}
+.fauna b{font-family:var(--display);font-weight:500}
+
+.field{margin-top:64px}
+.field h2{font-family:var(--display);font-size:clamp(1.5rem,3.4vw,2.2rem);margin:0 0 6px;letter-spacing:-.015em}
+.field > p{color:var(--muted);margin:0 0 22px;max-width:60ch}
+.cues{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.cue{border-top:5px solid var(--c);padding-top:12px}
+.cue h3{font-family:var(--display);margin:0;font-size:1.25rem}
+.cue .yr{color:var(--muted);font-size:.9rem;margin:0 0 8px}
+.cue ul{margin:0;padding-left:1.1em}
+footer.wrap{margin-top:56px;padding-bottom:40px;font-size:.85rem;color:var(--muted)}
+footer p{max-width:72ch;margin:0;border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:860px){ .lab{grid-template-columns:1fr} .cues{grid-template-columns:1fr;gap:22px} }
+@media (max-width:480px){ body{font-size:16px} .stage-btn .yr{font-size:.75rem} .tag b{font-size:.8rem} }
+@media (prefers-reduced-motion: reduce){ .tag,.meter span{transition:none} }
+</style>
+</head>
+<body>
+<header class="wrap">
+  <h1>Estágios de Maturidade da Mata Atlântica</h1>
+  <p class="intro">Quando uma roça ou um pasto é abandonado, a floresta volta em camadas, do chão para o céu. Veja a regeneração acontecer, depois escolha uma camada e compare como ela muda de um estágio para o outro.</p>
+  <div class="timeline" role="group" aria-label="Estágios da regeneração">
+    <button class="stage-btn" data-stage="0" style="--accent:var(--ochre)" aria-pressed="false"><span class="n">1</span><span class="nm">Capoeirinha</span><span class="yr">1 a 6 anos</span></button>
+    <button class="stage-btn" data-stage="1" style="--accent:var(--green)" aria-pressed="false"><span class="n">2</span><span class="nm">Capoeira</span><span class="yr">6 a 15 anos</span></button>
+    <button class="stage-btn" data-stage="2" style="--accent:var(--pink)" aria-pressed="true"><span class="n">3</span><span class="nm">Capoeirão</span><span class="yr">15 a 30+ anos</span></button>
+  </div>
+  <div class="slider-row">
+    <label for="years">Anos desde o abandono da área</label>
+    <output id="yearsOut" for="years">25</output>
+    <button class="play" id="play" type="button" aria-pressed="false">▶ Ver a regeneração</button>
+  </div>
+  <div class="track">
+    <input id="years" type="range" min="1" max="35" step="1" value="25" aria-describedby="scaleDesc">
+    <div class="scale" id="scaleDesc" aria-hidden="true">
+      <span style="--c:var(--ochre);flex:5">capoeirinha</span><span style="--c:var(--green);flex:9">capoeira</span><span style="--c:var(--pink);flex:20">capoeirão</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap lab">
+  <div>
+    <div class="stagebox" id="stagebox" role="img" aria-label="Modelo 3D low-poly das camadas da floresta, de baixo para cima: solo, serrapilheira, ervas, arbustos, sub-bosque e dossel">
+      <canvas id="scene"></canvas>
+    </div>
+    <div class="controls">
+      <span id="chips" role="group" aria-label="Escolher camada" style="display:contents"></span>
+    </div>
+    <p class="hint">Arraste para girar. Toque numa camada do modelo ou escolha pelos botões.</p>
+  </div>
+
+  <aside class="panel" id="panel" aria-live="polite">
+    <p class="stage" id="pStage"></p>
+    <h2 id="pTitle"></h2>
+    <p id="pTxt"></p>
+    <ul id="pEsp"></ul>
+    <p class="compare" id="pCompare"></p>
+    <dl class="facts">
+      <dt>Idade aproximada</dt><dd id="fAge"></dd>
+      <dt>Altura da vegetação</dt><dd id="fHeight"></dd>
+      <dt>Luz no chão</dt><dd><span id="fLight"></span><div class="meter" aria-hidden="true"><span id="fMeter"></span></div></dd>
+    </dl>
+    <p class="fauna"><b>Quem aparece:</b> <span id="pFauna"></span></p>
+    <div class="layernav">
+      <button type="button" id="up">Camada acima</button>
+      <button type="button" id="down">Camada abaixo</button>
+    </div>
+  </aside>
+</main>
+
+<section class="wrap field">
+  <h2>Na trilha, como reconhecer</h2>
+  <p>Num mesmo morro da Ilha dá para atravessar os três estágios em poucos minutos de caminhada. Estas são as pistas mais fáceis de ver.</p>
+  <div class="cues" id="cues"></div>
+</section>
+
+<footer class="wrap">
+  <p>Idades, alturas e porcentagens de luz são aproximadas e ilustrativas: variam com o solo, o clima, a vizinhança de mata madura e o histórico de uso da área (roça, pasto, fogo). Baseado na sucessão descrita por Roberto M. Klein para a Floresta Ombrófila Densa de Santa Catarina e nos parâmetros da Resolução CONAMA nº 4/1994.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const STAGES=[
+ {nome:"Capoeirinha",fase:"estágio inicial",anos:"cerca de 1 a 6 anos",altura:"até uns 3 m",accent:"var(--ochre)",
+  fauna:"abelhas e vespas nas flores das vassouras, gafanhotos e aves de campo aberto como o tico-tico.",
+  trilha:["Mato baixo, na altura do peito ou da cabeça","Tom cinza-esverdeado das vassouras","Sol forte e chão aparecendo entre as plantas"],
+  L:{
+   copa:{txt:"Ainda não existe. Nenhuma árvore fecha o céu, e o sol bate direto no chão.",esp:[]},
+   sub:{txt:"Ausente, ou com uma ou outra arvoreta pioneira começando a despontar no meio do vassoural.",esp:[["Capororoca jovem","Myrsine coriacea"]]},
+   arb:{txt:"É a camada dominante. Vassourais densos de 1 a 3 m cobrem o terreno e produzem a primeira sombra, que prepara o lugar para as árvores.",esp:[["Vassoura","Baccharis dracunculifolia"],["Outras vassouras","Baccharis spp."],["Aroeira-vermelha jovem","Schinus terebinthifolia"]]},
+   erv:{txt:"Capins e plantas que adoram sol pleno. A samambaia-das-taperas forma manchas fechadas, típicas de áreas que já pegaram fogo.",esp:[["Samambaia-das-taperas","Pteridium arachnoideum"],["Capins nativos e exóticos",""]]},
+   ser:{txt:"Fina e cheia de falhas: o solo aparece entre as folhas secas.",esp:[]},
+   solo:{txt:"Claro, compactado e pobre em matéria orgânica, herança do uso anterior. Esquenta muito ao sol e perde água rápido.",esp:[]}
+  }},
+ {nome:"Capoeira",fase:"estágio médio",anos:"cerca de 6 a 15 anos",altura:"de 4 a 8 m",accent:"var(--green)",
+  fauna:"sabiás, sanhaços e saíras comem os frutos da capororoca e da embaúba e trazem sementes da mata vizinha. Morcegos frugívoros fazem o mesmo à noite.",
+  trilha:["Arvoretas finas e retas, quase todas da mesma idade","Embaúbas com folhas prateadas por baixo","Vassouras secas em pé no meio da sombra"],
+  L:{
+   copa:{txt:"Ainda aberta. As copas das arvoretas começam a se tocar, mas sem formar teto contínuo. Os primeiros jacatirões despontam acima delas.",esp:[["Jacatirão-açu jovem","Miconia cinnamomifolia"]]},
+   sub:{txt:"Camada dominante: arvoretas pioneiras de crescimento rápido, de 4 a 8 m, que vivem pouco e preparam a sombra para as próximas.",esp:[["Capororoca","Myrsine coriacea"],["Embaúba","Cecropia glaziovii"],["Aroeira-vermelha","Schinus terebinthifolia"],["Tanheiro","Alchornea triplinervia"]]},
+   arb:{txt:"As vassouras, que precisam de sol, começam a morrer na sombra das arvoretas. No lugar delas nascem mudas de espécies que toleram meia-sombra.",esp:[["Vassouras em declínio","Baccharis spp."],["Mudas de jacatirão e de canelas",""]]},
+   erv:{txt:"O capim recua. Aparecem samambaias e ervas de meia-sombra.",esp:[]},
+   ser:{txt:"Camada contínua de folhas, ainda fina. Começa a devolver nutrientes ao solo de forma constante.",esp:[]},
+   solo:{txt:"Escurecendo nos primeiros centímetros, com mais raízes finas, minhocas e microrganismos.",esp:[]}
+  }},
+ {nome:"Capoeirão",fase:"estágio avançado",anos:"cerca de 15 a 30 anos ou mais",altura:"de 10 a 15 m",accent:"var(--pink)",
+  fauna:"tucanos, jacus e saíras usam a copa; no chão úmido aparecem sapos e rãs de folhiço, além de muitos fungos e invertebrados.",
+  trilha:["Troncos mais grossos e sombra quase contínua","Copas floridas de branco e rosa do jacatirão no verão","Chão fofo e úmido, coberto de folhas"],
+  L:{
+   copa:{txt:"Dossel fechado, de 10 a 15 m. Em Santa Catarina é a fase do jacatirão-açu, que pinta os morros de branco e rosa na floração. Bromélias, orquídeas e liquens começam a ocupar os galhos.",esp:[["Jacatirão-açu","Miconia cinnamomifolia"],["Epífitas: bromélias, orquídeas, liquens",""]]},
+   sub:{txt:"Árvores de espécies secundárias crescem à sombra do jacatirão e, com o tempo, vão substituí-lo rumo à floresta madura.",esp:[["Licurana","Hieronyma alchorneoides"],["Canelas","Ocotea, Nectandra"],["Palmiteiro jovem","Euterpe edulis"]]},
+   arb:{txt:"Arbustos de sombra, de folhas largas e escuras, que aproveitam a pouca luz que atravessa o dossel.",esp:[["Cafeeiros-do-mato","Psychotria spp."],["Pixiricas","Miconia spp."]]},
+   erv:{txt:"Samambaias, avencas e bromélias terrestres. O capim desapareceu por falta de luz.",esp:[]},
+   ser:{txt:"Espessa e contínua. Fungos, bactérias e pequenos animais transformam as folhas caídas em solo novo.",esp:[]},
+   solo:{txt:"Escuro, fofo e rico em matéria orgânica, atravessado por raízes e por redes de fungos que ligam as plantas entre si.",esp:[]}
+  }}
+];
+
+// densidades ao longo do tempo (ilustrativas)
+const KF=[
+ {y:1, v:{jac:0,epi:0,pio:0,emb:0,sec:0,vas:.35,som:0,gra:1,sam:0,lit:.08,dark:0,fun:0,luz:92}},
+ {y:3, v:{jac:0,epi:0,pio:.12,emb:0,sec:0,vas:1,som:0,gra:.75,sam:0,lit:.22,dark:.1,fun:0,luz:78}},
+ {y:10,v:{jac:.15,epi:0,pio:1,emb:.7,sec:.1,vas:.35,som:.25,gra:.3,sam:.2,lit:.55,dark:.45,fun:.15,luz:40}},
+ {y:25,v:{jac:1,epi:.6,pio:.2,emb:.15,sec:.75,vas:0,som:1,gra:0,sam:.85,lit:1,dark:1,fun:.8,luz:10}},
+ {y:35,v:{jac:.85,epi:1,pio:0,emb:0,sec:1,vas:0,som:1,gra:0,sam:1,lit:1,dark:1,fun:1,luz:6}}
+];
+
+const stageOf=y=> y<6?0:(y<15?1:2);
+function interp(y){
+  let a=KF[0],b=KF[KF.length-1];
+  for(let i=0;i<KF.length-1;i++){ if(y>=KF[i].y && y<=KF[i+1].y){a=KF[i];b=KF[i+1];break;} }
+  const t=b.y===a.y?0:(y-a.y)/(b.y-a.y), o={};
+  for(const k in a.v) o[k]=a.v[k]+(b.v[k]-a.v[k])*t;
+  return o;
+}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function lerpHex(a,b,t){
+  const pa=[1,3,5].map(i=>parseInt(a.substr(i,2),16)), pb=[1,3,5].map(i=>parseInt(b.substr(i,2),16));
+  return "#"+pa.map((v,i)=>Math.round(v+(pb[i]-v)*t).toString(16).padStart(2,"0")).join("");
+}
+
+/* ---------- UI comum ---------- */
+const state={y:25,sel:"copa"};
+const LAYERS=[ // de baixo para cima
+  {id:"solo",nome:"Solo",h:1.0},
+  {id:"ser",nome:"Serrapilheira",h:.25},
+  {id:"erv",nome:"Ervas",h:.55},
+  {id:"arb",nome:"Arbustos",h:1.3},
+  {id:"sub",nome:"Sub-bosque",h:2.1},
+  {id:"copa",nome:"Dossel",h:1.9}
+];
+const chips=document.getElementById("chips");
+[...LAYERS].reverse().forEach(L=>{
+  const b=document.createElement("button"); b.className="chip"; b.type="button"; b.textContent=L.nome; b.dataset.id=L.id;
+  b.addEventListener("click",()=>selectLayer(L.id));
+  chips.appendChild(b);
+});
+function selectLayer(id){state.sel=id;updateUI();rebuildHighlights();}
+function presence(id,v){
+  switch(id){case "copa":return v.jac+v.epi;case "sub":return v.pio+v.emb+v.sec+v.jac;case "arb":return v.vas+v.som;case "erv":return v.gra+v.sam;default:return 1;}
+}
+function updateUI(){
+  const v=interp(state.y), si=stageOf(state.y), st=STAGES[si];
+  const L=LAYERS.find(l=>l.id===state.sel), info=st.L[state.sel];
+  document.getElementById("panel").style.setProperty("--accent",st.accent);
+  document.getElementById("pStage").textContent=`${st.nome}, ${st.fase}`;
+  document.getElementById("pTitle").textContent=L.nome;
+  document.getElementById("pTxt").textContent=info.txt;
+  const ul=document.getElementById("pEsp"); ul.innerHTML="";
+  info.esp.forEach(([n,sc])=>{const li=document.createElement("li");li.innerHTML=n+(sc?` <i>(${sc})</i>`:"");ul.appendChild(li);});
+  ul.style.display=info.esp.length?"":"none";
+  const pres=presence(state.sel,v)>=.04;
+  document.getElementById("pCompare").textContent=pres
+    ?"Troque o estágio lá em cima para ver como esta mesma camada muda com o tempo."
+    :"Avance o tempo para ver quando esta camada começa a se formar.";
+  const idx=LAYERS.findIndex(l=>l.id===state.sel);
+  document.getElementById("up").disabled=idx===LAYERS.length-1;
+  document.getElementById("down").disabled=idx===0;
+  document.getElementById("fAge").textContent=st.anos;
+  document.getElementById("fHeight").textContent=st.altura;
+  const luz=Math.round(v.luz/2)*2;
+  document.getElementById("fLight").textContent=`cerca de ${luz}%`;
+  document.getElementById("fMeter").style.width=luz+"%";
+  document.getElementById("pFauna").textContent=st.fauna.charAt(0).toUpperCase()+st.fauna.slice(1);
+  document.querySelectorAll(".stage-btn").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.stage===si)));
+  document.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.id===state.sel)));
+  document.getElementById("yearsOut").textContent=state.y;
+  document.getElementById("years").value=state.y;
+  LAYERS.forEach(L=>{ if(tags[L.id]){ tags[L.id].classList.toggle("sel",L.id===state.sel); tags[L.id].querySelector("small").textContent=presence(L.id,v)<.04?"ausente":""; } });
+}
+const cues=document.getElementById("cues");
+STAGES.forEach(st=>{
+  const d=document.createElement("div"); d.className="cue"; d.style.setProperty("--c",st.accent);
+  d.innerHTML=`<h3>${st.nome}</h3><p class="yr">${st.anos.charAt(0).toUpperCase()+st.anos.slice(1)}</p><ul>${st.trilha.map(t=>`<li>${t}</li>`).join("")}</ul>`;
+  cues
